@@ -1,7 +1,88 @@
 @import "tailwindcss";
 
-@theme {
-  --font-sans:
-    var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+:root {
+  --font-mono: "Monaco", "Menlo", "Consolas", monospace;
+  --color-bg: #fff;
+  --color-bg-alt: #e5e5e5;
+  --color-fg: #111;
+  --color-border: #111;
+}
+
+body {
+  font-family: var(--font-mono);
+  background: var(--color-bg);
+  color: var(--color-fg);
+}
+
+* {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+}
+
+button,
+input,
+textarea,
+select,
+.border,
+.border-solid {
+  border: 2px solid var(--color-border) !important;
+  background: var(--color-bg-alt) !important;
+  color: var(--color-fg) !important;
+  font-family: var(--font-mono) !important;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-mono) !important;
+  color: var(--color-fg) !important;
+}
+
+.bg-white,
+.bg-white\/70,
+.bg-white\/80,
+.bg-white\/90,
+.bg-white\/60,
+.bg-white\/50 {
+  background: var(--color-bg) !important;
+}
+
+.bg-gray-200,
+.bg-gray-700,
+.bg-gray-800,
+.bg-gray-900,
+.bg-indigo-50,
+.bg-indigo-100 {
+  background: var(--color-bg-alt) !important;
+}
+
+.text-indigo-600,
+.text-indigo-700,
+.text-indigo-300,
+.text-yellow-400,
+.text-red-500,
+.text-indigo-900 {
+  color: var(--color-fg) !important;
+}
+
+.border-indigo-100,
+.border-gray-200,
+.border-gray-700,
+.border-gray-800,
+.border-indigo-300,
+.border-indigo-600,
+.border-indigo-900 {
+  border: 2px solid var(--color-border) !important;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  background: var(--color-bg-alt);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
 }
