@@ -1,88 +1,268 @@
 @import "tailwindcss";
 
+/* Retro Mac 1985 Color Palette */
 :root {
-  --font-mono: "Monaco", "Menlo", "Consolas", monospace;
-  --color-bg: #fff;
-  --color-bg-alt: #e5e5e5;
-  --color-fg: #111;
-  --color-border: #111;
+  --retro-bg: #faf6f6;
+  --retro-window: #f0f0f0;
+  --retro-blue: #0066cc;
+  --retro-dark-blue: #003399;
+  --retro-text: #000000;
+  --retro-green: #00ff00;
+  --retro-amber: #ffcc00;
+  --font-mono: "Monaco", "Menlo", "Consolas", "Courier New", monospace;
+  --font-system:
+    "Chicago", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+    sans-serif;
 }
 
 body {
+  font-family: var(--font-system);
+  background: var(--retro-bg);
+  color: var(--retro-text);
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* Retro Mac Typography */
+.font-chicago {
+  font-family: var(--font-system);
+  font-weight: bold;
+  letter-spacing: 0.5px;
+}
+
+.font-monaco {
   font-family: var(--font-mono);
-  background: var(--color-bg);
-  color: var(--color-fg);
 }
 
-* {
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  text-shadow: none !important;
+/* Pixelated Elements */
+.pixelated {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
 }
 
-button,
-input,
-textarea,
-select,
-.border,
-.border-solid {
-  border: 2px solid var(--color-border) !important;
-  background: var(--color-bg-alt) !important;
-  color: var(--color-fg) !important;
-  font-family: var(--font-mono) !important;
+/* Classic Mac Shadows */
+.mac-shadow {
+  box-shadow:
+    2px 2px 0px #000000,
+    4px 4px 0px rgba(0, 0, 0, 0.3);
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: var(--font-mono) !important;
-  color: var(--color-fg) !important;
+.mac-inset {
+  box-shadow:
+    inset 1px 1px 0px rgba(255, 255, 255, 0.8),
+    inset -1px -1px 0px rgba(0, 0, 0, 0.3);
 }
 
-.bg-white,
-.bg-white\/70,
-.bg-white\/80,
-.bg-white\/90,
-.bg-white\/60,
-.bg-white\/50 {
-  background: var(--color-bg) !important;
+/* Terminal Styles */
+.terminal-bg {
+  background: #000000;
+  color: #00ff00;
+  font-family: var(--font-mono);
 }
 
-.bg-gray-200,
-.bg-gray-700,
-.bg-gray-800,
-.bg-gray-900,
-.bg-indigo-50,
-.bg-indigo-100 {
-  background: var(--color-bg-alt) !important;
+.terminal-cursor {
+  animation: blink 1s infinite;
 }
 
-.text-indigo-600,
-.text-indigo-700,
-.text-indigo-300,
-.text-yellow-400,
-.text-red-500,
-.text-indigo-900 {
-  color: var(--color-fg) !important;
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
 }
 
-.border-indigo-100,
-.border-gray-200,
-.border-gray-700,
-.border-gray-800,
-.border-indigo-300,
-.border-indigo-600,
-.border-indigo-900 {
-  border: 2px solid var(--color-border) !important;
+/* Retro Animations */
+.retro-slide-in {
+  animation: retroSlideIn 0.5s ease-out;
 }
 
+@keyframes retroSlideIn {
+  from {
+    transform: translateX(-100%) scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
+}
+
+.retro-fade-in {
+  animation: retroFadeIn 0.8s ease-out;
+}
+
+@keyframes retroFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Progress Bars - Retro Style */
+.retro-progress {
+  background: #ffffff;
+  border: 2px solid #000000;
+  box-shadow: inset 1px 1px 0px rgba(0, 0, 0, 0.3);
+}
+
+.retro-progress-fill {
+  background: linear-gradient(90deg, #0066cc 0%, #003399 100%);
+  transition: width 1s ease-out;
+}
+
+/* Scroll Bars - Classic Mac Style */
 ::-webkit-scrollbar {
-  width: 12px;
-  background: var(--color-bg-alt);
+  width: 16px;
+  background: #c0c0c0;
+  border: 1px solid #000000;
 }
+
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border);
+  background: #808080;
+  border: 1px solid #000000;
+  box-shadow: inset 1px 1px 0px rgba(255, 255, 255, 0.5);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #606060;
+}
+
+/* Classic Mac Button Styles */
+.mac-button {
+  background: #f0f0f0;
+  border: 2px outset #c0c0c0;
+  font-family: var(--font-system);
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: all 0.1s ease;
+}
+
+.mac-button:hover {
+  background: #e0e0e0;
+}
+
+.mac-button:active {
+  border: 2px inset #c0c0c0;
+  background: #d0d0d0;
+}
+
+/* Desktop Pattern */
+.retro-desktop {
+  background-image: radial-gradient(
+    circle at 2px 2px,
+    #808080 1px,
+    transparent 0
+  );
+  background-size: 4px 4px;
+}
+
+/* Window Chrome */
+.window-chrome {
+  background: linear-gradient(180deg, #f0f0f0 0%, #c0c0c0 100%);
+  border: 2px outset #c0c0c0;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .mac-shadow {
+    box-shadow:
+      1px 1px 0px #000000,
+      2px 2px 0px rgba(0, 0, 0, 0.3);
+  }
+
+  :root {
+    font-size: 14px;
+  }
+}
+
+/* Focus states for accessibility */
+.retro-focus:focus {
+  outline: 2px solid var(--retro-blue);
+  outline-offset: 2px;
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+
+  .mac-shadow,
+  .terminal-bg {
+    box-shadow: none;
+    background: white !important;
+    color: black !important;
+    border: 1px solid black;
+  }
+}
+
+/* Animation utilities */
+.animate-fadeIn {
+  animation: fadeIn 0.6s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 0.5s ease-out;
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-typewriter {
+  overflow: hidden;
+  border-right: 2px solid;
+  white-space: nowrap;
+  animation:
+    typing 2s steps(40, end),
+    blink-caret 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blink-caret {
+  from,
+  to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: currentColor;
+  }
 }

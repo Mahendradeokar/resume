@@ -1,7 +1,11 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
+import TerminalSection from "./TerminalSection";
+import RetroProgressBar from "./RetroProgressBar";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -34,31 +38,32 @@ export default function PDFViewer({
     if (onNumPagesChange) onNumPagesChange(numPages);
   };
 
-  const goToPrevPage = () => setCurrentPage(Math.max(1, currentPage - 1));
-  const goToNextPage = () =>
-    numPages && setCurrentPage(Math.min(numPages, currentPage + 1));
-
   return (
-    <Document
-      file={file}
-      className={"h-full overflow-auto bg-white font-mono text-black"}
-      onLoadSuccess={handleLoadSuccess}
-      loading={
-        <div className="border-2 border-black bg-white p-4 text-center font-mono text-black">
-          Loading PDF…
-        </div>
-      }
-      error={
-        <div className="border-2 border-black bg-white p-4 text-center font-mono text-black">
-          Failed to load PDF.
-        </div>
-      }
-    >
-      <Page
-        key={`page_${currentPage}`}
-        pageNumber={currentPage}
-        width={Math.min(800, window.innerWidth - 32)}
-      />
-    </Document>
+    <div className="relative flex w-full flex-col items-center">
+      <Document
+        file={file}
+        className={"h-full overflow-auto bg-white font-mono text-black"}
+        onLoadSuccess={handleLoadSuccess}
+        loading={
+          <div className="flex flex-col items-center justify-center p-8">
+            <RetroProgressBar skill="Loading PDF..." percentage={80} />
+          </div>
+        }
+        error={
+          <TerminalSection title="PDF Error">
+            Failed to load PDF.
+          </TerminalSection>
+        }
+      >
+        <Page
+          key={`page_${currentPage}`}
+          pageNumber={currentPage}
+          width={Math.min(
+            800,
+            typeof window !== "undefined" ? window.innerWidth - 32 : 800,
+          )}
+        />
+      </Document>
+    </div>
   );
 }
