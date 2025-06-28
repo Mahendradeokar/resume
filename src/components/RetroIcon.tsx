@@ -6,7 +6,6 @@ import {
   ArrowLongRightIcon,
   CommandLineIcon,
   ShareIcon,
-  FolderArrowDownIcon,
   SunIcon,
   MoonIcon,
 } from "@heroicons/react/16/solid";

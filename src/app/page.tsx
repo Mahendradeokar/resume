@@ -15,7 +15,7 @@ export default function HomePage() {
       const now = new Date();
       setCurrentTime(
         now.toLocaleTimeString("en-US", {
-          hour12: false,
+          hour12: true,
           hour: "2-digit",
           minute: "2-digit",
         }),
@@ -28,7 +28,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div className="retro-desktop min-h-screen bg-gray-300">
+    <div className="retro-desktop flex min-h-screen flex-col bg-gray-300">
       {/* Menu Bar */}
       <div className="flex items-center justify-between border-b-2 border-black bg-white p-2">
         <div className="font-chicago flex items-center gap-2 text-sm font-bold text-black">
@@ -40,7 +40,7 @@ export default function HomePage() {
       </div>
 
       {/* Desktop */}
-      <div className="flex min-h-screen items-center justify-center p-8">
+      <div className="flex flex-1 items-center justify-center p-8">
         <RetroMacWindow
           title="Resume Viewer"
           isActive={true}

@@ -2,13 +2,13 @@
 
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import posthog from "posthog-js";
 import PixelButton from "../../components/PixelButton";
 import RetroIcon from "../../components/RetroIcon";
 import TerminalSection from "../../components/TerminalSection";
 import RetroMacWindow from "../../components/RetroMacWindow";
 import VerticalSeparator from "../../components/VerticalSeparator";
-import ThemeToggle from "../../components/ThemeToggle";
 
 const PDFViewer = dynamic(() => import("~/components/PDFViewer"), {
   ssr: false,
@@ -31,11 +31,29 @@ export default function ClientResumePage({
   const [error, setError] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [numPages, setNumPages] = useState<number | null>(null);
+  const searchParams = useSearchParams();
+  const router = useRouter();
 
   useEffect(() => {
     if (!resume) setError(true);
-    else posthog.capture("resume_viewed", { slug });
-  }, [resume, slug]);
+    else {
+      // Check if there's a ref query parameter
+      const refId = searchParams.get("ref");
+
+      posthog.capture("resume_viewed", {
+        slug,
+        ...(refId && { referred_from: refId }),
+      });
+
+      // Remove the ref parameter from URL
+      if (refId) {
+        const newSearchParams = new URLSearchParams(searchParams);
+        newSearchParams.delete("ref");
+        const newUrl = `${window.location.pathname}${newSearchParams.toString() ? `?${newSearchParams.toString()}` : ""}`;
+        router.replace(newUrl);
+      }
+    }
+  }, [resume, slug, searchParams, router]);
 
   if (error || !resume) {
     return (
@@ -54,17 +72,18 @@ export default function ClientResumePage({
   };
 
   const handleShare = async () => {
-    posthog.capture("resume_shared", { slug });
-    const url = window.location.href;
+    posthog.capture("resume_shared", { slug, ref: posthog.get_distinct_id() });
+    const url = new URL(window.location.href);
+    url.searchParams.set("ref", posthog.get_distinct_id());
     if (navigator.share) {
       try {
-        await navigator.share({ title: resume.title, url });
+        await navigator.share({ title: resume.title, url: url.toString() });
       } catch {
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(url.toString());
         alert("Link copied to clipboard!");
       }
     } else {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(url.toString());
       alert("Link copied to clipboard!");
     }
   };
