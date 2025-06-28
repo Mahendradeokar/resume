@@ -4,13 +4,17 @@ import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import posthog from "posthog-js";
 import {
-  SunIcon,
-  MoonIcon,
   ArrowDownTrayIcon,
-  ShareIcon,
   ArrowLongLeftIcon,
   ArrowLongRightIcon,
+  EnvelopeIcon,
+  CheckIcon,
+  LinkIcon,
+  ClipboardDocumentIcon,
+  ClipboardIcon,
 } from "@heroicons/react/24/outline";
+import ActionButton from "~/components/StateButton";
+import { Logo } from "~/components/Logo";
 
 const PDFViewer = dynamic(() => import("~/components/PDFViewer"), {
   ssr: false,
@@ -26,6 +30,20 @@ type ClientResumePageProps = {
   slug: string;
 };
 
+const ActionButtonCopyState = () => (
+  <>
+    <ActionButton.Loading>
+      <ClipboardIcon className="h-4 w-4 text-black" />
+      <span>Copying</span>
+    </ActionButton.Loading>
+
+    <ActionButton.Completed>
+      <CheckIcon className="h-4 w-4 text-black" />
+      <span>Copied</span>
+    </ActionButton.Completed>
+  </>
+);
+
 export default function ClientResumePage({
   resume,
   slug,
@@ -33,21 +51,33 @@ export default function ClientResumePage({
   const [error, setError] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [numPages, setNumPages] = useState<number | null>(null);
-  const [theme, setTheme] = useState<"light" | "dark">(
-    typeof window !== "undefined" &&
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light",
-  );
 
   useEffect(() => {
     if (!resume) setError(true);
-    else posthog.capture("resume_viewed", { slug });
+    else {
+      // Check if user came from a referral link
+      const urlParams = new URLSearchParams(window.location.search);
+      const refParam = urlParams.get("ref");
+
+      if (refParam) {
+        posthog.capture("resume_viewed_from_referral", {
+          slug,
+          referrer_id: refParam,
+        });
+
+        // Remove the ref parameter from URL without page reload
+        const newUrl = new URL(window.location.href);
+        newUrl.searchParams.delete("ref");
+        window.history.replaceState({}, "", newUrl.toString());
+      } else {
+        posthog.capture("resume_viewed", { slug });
+      }
+    }
   }, [resume, slug]);
 
   useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
-  }, [theme]);
+    posthog.capture("page_changed", { page: currentPage });
+  }, [currentPage]);
 
   if (error || !resume) {
     return (
@@ -66,57 +96,70 @@ export default function ClientResumePage({
   };
 
   const handleShare = async () => {
-    posthog.capture("resume_shared", { slug });
-    const url = window.location.href;
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: resume.title, url });
-      } catch {
-        await navigator.clipboard.writeText(url);
-        alert("Link copied to clipboard!");
-      }
-    } else {
-      await navigator.clipboard.writeText(url);
-      alert("Link copied to clipboard!");
-    }
+    const identityId = posthog.get_distinct_id();
+    posthog.capture("resume_shared", { slug, ref: identityId });
+    const url = new URL(window.location.href);
+    url.searchParams.set("ref", identityId);
+    await navigator.clipboard.writeText(url.toString());
   };
-
-  const handleThemeToggle = () => setTheme(theme === "dark" ? "light" : "dark");
 
   return (
     <main className="flex min-h-screen w-full items-center justify-center bg-white p-2">
       <div className="flex w-full max-w-4xl flex-col border-2 border-black bg-white">
         {/* Local PDF Header */}
         <div className="flex items-center justify-between border-b-2 border-black bg-white px-4 py-3">
-          <h1 className="font-mono text-xl font-bold text-black select-none md:text-2xl">
-            {resume.title}
-          </h1>
+          <Logo />
           <div className="flex items-center gap-2">
-            <button
-              onClick={handleThemeToggle}
-              className="border-2 border-black bg-gray-200 p-2 font-mono"
-              aria-label="Toggle theme"
+            <ActionButton
+              onClick={async () => {
+                await navigator.clipboard.writeText(
+                  "deokarmahendra424@gmail.com",
+                );
+              }}
+              aria-label="Copy Email"
+              className="flex w-28 items-center justify-center gap-1"
+              title="Copy Email"
             >
-              {theme === "dark" ? (
-                <SunIcon className="h-5 w-5 text-black" />
-              ) : (
-                <MoonIcon className="h-5 w-5 text-black" />
-              )}
-            </button>
-            <button
+              <ActionButton.Normal>
+                <EnvelopeIcon className="h-4 w-4 text-black" />
+                <span>Email</span>
+              </ActionButton.Normal>
+              <ActionButtonCopyState />
+            </ActionButton>
+
+            <ActionButton
               onClick={handleShare}
-              className="border-2 border-black bg-gray-200 p-2 font-mono"
               aria-label="Share resume"
+              className="flex w-28 items-center justify-center gap-1"
+              title="Share resume"
             >
-              <ShareIcon className="h-5 w-5 text-black" />
-            </button>
-            <button
+              <ActionButton.Normal>
+                <LinkIcon className="h-4 w-4 rotate-6 text-black" />
+                <span>Link</span>
+              </ActionButton.Normal>
+              <ActionButtonCopyState />
+            </ActionButton>
+
+            <ActionButton
               onClick={handleDownload}
-              className="border-2 border-black bg-gray-200 p-2 font-mono"
+              className="flex w-36 items-center justify-center gap-1"
               aria-label="Download resume"
+              title="Download resume"
             >
-              <ArrowDownTrayIcon className="h-5 w-5 text-black" />
-            </button>
+              <ActionButton.Normal>
+                <ArrowDownTrayIcon className="h-5 w-5 text-black" />
+                <span>Download</span>
+              </ActionButton.Normal>
+              <ActionButton.Loading>
+                <ArrowDownTrayIcon className="h-5 w-5 text-black" />
+                <span>Downloading</span>
+              </ActionButton.Loading>
+
+              <ActionButton.Completed>
+                <CheckIcon className="h-4 w-4 text-black" />
+                <span>Downloaded</span>
+              </ActionButton.Completed>
+            </ActionButton>
           </div>
         </div>
         {/* PDF Viewer */}
@@ -129,31 +172,31 @@ export default function ClientResumePage({
           />
         </div>
         {/* Page Navigation Bar (bottom right inside PDF card) */}
-        {numPages && (
-          <div className="flex justify-end gap-3 bg-white p-4">
-            <button
-              className="border-2 border-black bg-gray-200 px-3 py-1 font-mono text-xs font-medium disabled:opacity-50"
-              onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-              disabled={currentPage <= 1}
-              aria-label="Previous page"
-            >
-              <ArrowLongLeftIcon className="h-5 w-5 text-black" />
-            </button>
-            {/* <span className="font-mono text-xs select-none">
+        <div className="flex justify-end gap-3 bg-white p-4">
+          <ActionButton
+            className="border-2 border-black bg-gray-200 px-3 py-1 font-mono text-xs font-medium disabled:opacity-50"
+            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+            disabled={currentPage <= 1}
+            aria-label="Previous page"
+            title="Previous page"
+          >
+            <ArrowLongLeftIcon className="h-5 w-5 text-black" />
+          </ActionButton>
+          {/* <span className="font-mono text-xs select-none">
               Page {currentPage} / {numPages}
             </span> */}
-            <button
-              className="border-2 border-black bg-gray-200 px-3 py-1 font-mono text-xs font-medium disabled:opacity-50"
-              onClick={() =>
-                setCurrentPage(Math.min(numPages, currentPage + 1))
-              }
-              disabled={currentPage >= numPages}
-              aria-label="Next page"
-            >
-              <ArrowLongRightIcon className="h-5 w-5 text-black" />
-            </button>
-          </div>
-        )}
+          <ActionButton
+            className="border-2 border-black bg-gray-200 px-3 py-1 font-mono text-xs font-medium disabled:opacity-50"
+            onClick={() =>
+              setCurrentPage(Math.min(numPages ?? 0, currentPage + 1))
+            }
+            disabled={!numPages || currentPage >= numPages}
+            aria-label="Next page"
+            title="Next page"
+          >
+            <ArrowLongRightIcon className="h-5 w-5 text-black" />
+          </ActionButton>
+        </div>
       </div>
     </main>
   );

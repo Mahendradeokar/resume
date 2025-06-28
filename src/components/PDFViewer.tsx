@@ -34,23 +34,20 @@ export default function PDFViewer({
     if (onNumPagesChange) onNumPagesChange(numPages);
   };
 
-  const goToPrevPage = () => setCurrentPage(Math.max(1, currentPage - 1));
-  const goToNextPage = () =>
-    numPages && setCurrentPage(Math.min(numPages, currentPage + 1));
-
   return (
     <Document
       file={file}
+      externalLinkTarget={"_blank"}
       className={"h-full overflow-auto bg-white font-mono text-black"}
       onLoadSuccess={handleLoadSuccess}
       loading={
         <div className="border-2 border-black bg-white p-4 text-center font-mono text-black">
-          Loading PDF…
+          Loading Resume...
         </div>
       }
       error={
         <div className="border-2 border-black bg-white p-4 text-center font-mono text-black">
-          Failed to load PDF.
+          Failed to load Resume.
         </div>
       }
     >
