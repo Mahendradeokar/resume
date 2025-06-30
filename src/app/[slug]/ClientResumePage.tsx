@@ -10,14 +10,19 @@ import {
   EnvelopeIcon,
   CheckIcon,
   LinkIcon,
-  ClipboardDocumentIcon,
   ClipboardIcon,
 } from "@heroicons/react/24/outline";
 import ActionButton from "~/components/StateButton";
 import { Logo } from "~/components/Logo";
+import { setVisitedResume } from "~/lib/utils";
 
 const PDFViewer = dynamic(() => import("~/components/PDFViewer"), {
   ssr: false,
+  loading: () => (
+    <div className="m-6 border-2 border-black bg-white p-4 text-center font-mono text-black">
+      Loading Resume...
+    </div>
+  ),
 });
 
 interface ResumeInfo {
@@ -72,6 +77,8 @@ export default function ClientResumePage({
       } else {
         posthog.capture("resume_viewed", { slug });
       }
+
+      setVisitedResume(slug);
     }
   }, [resume, slug]);
 
@@ -104,12 +111,12 @@ export default function ClientResumePage({
   };
 
   return (
-    <main className="flex min-h-screen w-full items-center justify-center bg-white p-2">
-      <div className="flex w-full max-w-4xl flex-col border-2 border-black bg-white">
+    <main className="flex w-full items-center justify-center bg-white p-4">
+      <div className="flex w-full max-w-[55rem] flex-col border-2 border-black bg-white">
         {/* Local PDF Header */}
         <div className="flex items-center justify-between border-b-2 border-black bg-white px-4 py-3">
           <Logo />
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <ActionButton
               onClick={async () => {
                 await navigator.clipboard.writeText(
@@ -163,7 +170,7 @@ export default function ClientResumePage({
           </div>
         </div>
         {/* PDF Viewer */}
-        <div className="flex min-h-screen w-full flex-1 items-center justify-center overflow-auto bg-white">
+        <div className="gap flex min-h-[calc(min(53rem,100vw)/0.707)] w-full flex-1 items-start justify-center overflow-auto bg-white">
           <PDFViewer
             file={resume.path}
             currentPage={currentPage}
