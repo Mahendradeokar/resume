@@ -7,7 +7,7 @@ export const setVisitedResume = (slug: string) => {
 };
 
 export const getVisitedResume = () => {
-  const DEFAULT_VALUE = "mahendra-devkar";
+  const DEFAULT_VALUE = "me";
   if (typeof window !== "undefined" && window.localStorage) {
     return localStorage.getItem("SLUG") ?? DEFAULT_VALUE;
   } else {
